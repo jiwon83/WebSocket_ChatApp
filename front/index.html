@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initialscale=1.0" />
+        <title>Websocket 실습 : 채팅</title>
+        <script>
+            const ws = new WebSocket('ws://localhost:8001');
+
+            ws.addEventListener('message', function(event){
+                const data = event.data;
+                console.log('서버로부터 수신한 데이터:', data);
+                // 메시지를 화면에 표시
+                displayMessage(data);
+            });
+            ws.addEventListener('open', function(event) {
+                console.log("WebSocket 연결이 열렸습니다.");
+            });
+
+            function sendMsg() {
+                alert("sendMsg");
+                const inputElement = document.getElementById('messageInput');
+                const message = inputElement.value;
+
+                if (ws.readyState === ws.OPEN && message.trim() !== '') {
+                    ws.send(message);
+                    inputElement.value = ''; // 메시지 전송 후 입력 필드 비우기
+                } else {
+                    alert("WebSocket 연결이 닫혀 있습니다.");
+                }
+            }
+
+            function displayMessage(message) {
+                const chatArea = document.getElementById('chatArea');
+                const messageElement = document.createElement('div');
+                messageElement.textContent = message;
+                chatArea.appendChild(messageElement);
+
+                // 스크롤을 항상 아래로 유지
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }
+        </script>
+    </head>
+    <body>
+        <h1>WebSocket 채팅 앱</h1>
+        <div id="chatArea" style="height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;"></div>
+        <input type="text" id="messageInput" placeholder="메시지를 입력하세요."/>
+        <button onclick="sendMsg()">전송</button>
+    </body>
+</html>
